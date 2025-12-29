@@ -19,7 +19,23 @@ jobs:
         id: resolve_tag
         run: |
           git fetch --tags --force
-          tag=$(git tag --points-at "${{ github.event.workflow_run.head_sha }}" | grep '^v' | head -n1 || true)
+          head_ref="${{ github.event.workflow_run.head_branch }}"
+          head_sha="${{ github.event.workflow_run.head_sha }}"
+
+          # If the CI run was triggered by a tag push, `head_branch` is typically the tag name.
+          # Prefer that value to avoid publishing twice when a user pushes `main` and `vX.Y.Z`
+          # together (which can trigger two CI runs that share the same HEAD SHA).
+          tag=""
+          if [[ "$head_ref" =~ ^v ]]; then
+            if git show-ref --tags --verify --quiet "refs/tags/$head_ref"; then
+              tag_sha="$(git rev-list -n1 "$head_ref")"
+              if [[ "$tag_sha" == "$head_sha" ]]; then
+                tag="$head_ref"
+              fi
+            fi
+          elif [[ -z "$head_ref" ]]; then
+            tag="$(git tag --points-at "$head_sha" | grep '^v' | head -n1 || true)"
+          fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
   release:
@@ -61,4 +77,3 @@ jobs:
         run: python -m build
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
