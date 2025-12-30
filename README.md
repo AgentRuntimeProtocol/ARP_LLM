@@ -53,4 +53,4 @@ from arp_llm.providers.openai import OpenAIChatModel
 model = OpenAIChatModel(model="gpt-4.1-mini", api_key="...", base_url="https://api.openai.com")
 ```
 
-See `Business_Docs/JARVIS/LLMProvider/HLD.md` and `Business_Docs/JARVIS/LLMProvider/LLD.md` for the design intent.
+See `https://github.com/AgentRuntimeProtocol/BusinessDocs/blob/main/Business_Docs/JARVIS/LLMProvider/HLD.md` and `https://github.com/AgentRuntimeProtocol/BusinessDocs/blob/main/Business_Docs/JARVIS/LLMProvider/LLD.md` for the design intent.
