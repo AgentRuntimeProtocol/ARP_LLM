@@ -13,7 +13,7 @@ LlmErrorCode = Literal[
 ]
 
 
-@dataclass(frozen=True)
+@dataclass
 class LlmError(Exception):
     code: LlmErrorCode
     message: str
@@ -23,4 +23,3 @@ class LlmError(Exception):
 
     def __str__(self) -> str:  # pragma: no cover
         return self.message
-

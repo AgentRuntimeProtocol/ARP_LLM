@@ -7,17 +7,26 @@ from arp_llm.providers.dev_mock import DevMockChatModel
 from arp_llm.providers.openai import OpenAIChatModel, OpenAIEmbedder
 
 
-def test_load_chat_model_from_env_or_dev_mock_defaults_to_dev_mock(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_load_chat_model_from_env_or_dev_mock_defaults_to_openai(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("ARP_LLM_PROFILE", raising=False)
+    monkeypatch.setenv("ARP_LLM_CHAT_MODEL", "m")
+    monkeypatch.setenv("ARP_LLM_API_KEY", "k")
+    model = load_chat_model_from_env_or_dev_mock()
+    assert isinstance(model, OpenAIChatModel)
+
+
+def test_load_chat_model_from_env_defaults_to_openai_profile(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("ARP_LLM_PROFILE", raising=False)
+    monkeypatch.setenv("ARP_LLM_CHAT_MODEL", "m")
+    monkeypatch.setenv("ARP_LLM_API_KEY", "k")
+    model = load_chat_model_from_env()
+    assert isinstance(model, OpenAIChatModel)
+
+
+def test_dev_mock_requires_explicit_profile(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ARP_LLM_PROFILE", "dev-mock")
     model = load_chat_model_from_env_or_dev_mock()
     assert isinstance(model, DevMockChatModel)
-
-
-def test_load_chat_model_from_env_requires_profile(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("ARP_LLM_PROFILE", raising=False)
-    with pytest.raises(LlmError) as exc:
-        load_chat_model_from_env()
-    assert exc.value.code == "invalid_request"
 
 
 def test_openai_compatible_requires_chat_model(monkeypatch: pytest.MonkeyPatch) -> None:

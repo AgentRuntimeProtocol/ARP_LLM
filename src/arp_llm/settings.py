@@ -23,7 +23,8 @@ class LlmEnv:
 
 
 def load_chat_model_from_env_or_dev_mock() -> ChatModel:
-    profile = _read_env("ARP_LLM_PROFILE", required=False) or "dev-mock"
+    # Default to OpenAI unless explicitly configured otherwise.
+    profile = _read_env("ARP_LLM_PROFILE", required=False) or "openai"
     if profile == "dev-mock":
         from .providers.dev_mock import DevMockChatModel
 
@@ -56,7 +57,8 @@ def load_chat_model_from_env() -> ChatModel:
 
 
 def load_embedder_from_env_or_dev_mock() -> Embedder:
-    profile = _read_env("ARP_LLM_PROFILE", required=False) or "dev-mock"
+    # Default to OpenAI unless explicitly configured otherwise.
+    profile = _read_env("ARP_LLM_PROFILE", required=False) or "openai"
     if profile == "dev-mock":
         from .providers.dev_mock import DevMockEmbedder
 
@@ -88,7 +90,7 @@ def load_embedder_from_env() -> Embedder:
 
 
 def _env_from_os() -> LlmEnv:
-    profile = _read_env("ARP_LLM_PROFILE", required=True)
+    profile = _read_env("ARP_LLM_PROFILE", required=False) or "openai"
     if profile not in ("dev-mock", "openai"):
         raise LlmError(code="invalid_request", message=f"Unsupported ARP_LLM_PROFILE: {profile}")
 

@@ -13,27 +13,43 @@ This package provides:
 pip install arp-llm
 ```
 
-## Quickstart (dev mock; no network)
+## Quickstart (OpenAI default)
+
+```bash
+export ARP_LLM_API_KEY=...
+export ARP_LLM_CHAT_MODEL=gpt-4.1-mini
+# Optional (OpenAI is the default profile):
+# export ARP_LLM_PROFILE=openai
+```
 
 ```python
 import asyncio
 
-from arp_llm import Message, load_chat_model_from_env_or_dev_mock
+from arp_llm import Message, load_chat_model_from_env
 
 async def main() -> None:
-    model = load_chat_model_from_env_or_dev_mock()
+    model = load_chat_model_from_env()
     resp = await model.response([Message.user("hello")])
     print(resp.text)
 
 asyncio.run(main())
 ```
 
+## Dev mock (optional; no network)
+
+```bash
+export ARP_LLM_PROFILE=dev-mock
+# Optional: provide deterministic fixtures
+# export ARP_LLM_DEV_MOCK_FIXTURES_PATH=./fixtures.json
+```
+
 ## Configuration (OpenAI)
 
 ```bash
-export ARP_LLM_PROFILE=openai
+# ARP_LLM_PROFILE=openai is optional (default)
 export ARP_LLM_API_KEY=...
 export ARP_LLM_CHAT_MODEL=gpt-4.1-mini
+# Optional overrides:
 export ARP_LLM_BASE_URL=https://api.openai.com
 ```
 
